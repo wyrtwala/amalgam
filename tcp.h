@@ -45,7 +45,7 @@ int tcp_send_ipv4(char* ip, int port, char* message, char* buffer, uint_64 buffe
   return 0;
 }
 
-int tcp_simple_server_ipv4(char* ip, int port, char* message, uint64_t message_size, char* client_message, uint64_t client_message_size, uint64_t listen_count){
+int tcp_simple_server_ipv4(char* ip, int port, uint64_t listen_count, char* message, uint64_t message_size, char* client_message, uint64_t client_message_size){
   
     if ((int server_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0){
       fprintf(stderr, "TCP_SIMPLE_SERVER_IPV4: Failed to open socket\n");
