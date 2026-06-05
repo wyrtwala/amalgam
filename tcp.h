@@ -11,17 +11,17 @@
 #include <arpa/inet.h>
 
 
-int tcp_create_socket_ipv4(){
+int tcp_open_socket_ipv4(){
   if ((int socket = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-    fprintf(stderr, "TCP_CREATE_SOCKET_IPV4: Failed to open socket\n");
+    fprintf(stderr, "TCP_OPEN_SOCKET_IPV4: Failed to open socket\n");
     return -1;
   }
   return socket;
 }
 
-int tcp_create_socket_ipv6(){
+int tcp_open_socket_ipv6(){
   if ((int socket = socket(AF_INET6, SOCK_STREAM, 0)) < 0){
-    fprintf(stderr, "TCP_CREATE_SOCKET_IPV6: Failed to open socket\n");
+    fprintf(stderr, "TCP_OPEN_SOCKET_IPV6: Failed to open socket\n");
     return -1;
   }
   return socket;
