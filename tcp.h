@@ -32,7 +32,7 @@ struct sockaddr_in tcp_create_address_ipv4(char* ip_address, int port){
                      address.sin_family = AF_INET;
                      address.sin_port = htons(port);
 
-  if (inet_pton(AF_INET, ip_address, &(address.sin_addr)) < 0){
+  if (inet_pton(AF_INET, ip_address, &(address.sin_addr)) < 1){
     fprintf(stderr, "TCP_CREATE_ADDRESS_IPV4: Incorrect IP address\n");
     return -1;
   }
@@ -44,15 +44,42 @@ struct sockaddr_in6 tcp_create_address_ipv6(char* ip_address, int port){
                      address.sin6_family = AF_INET6;
                      address.sin6_port = htons(port);
 
-  if (inet_pton(AF_INET6, ip_address, &(address.sin6_addr)) < 0){
+  if (inet_pton(AF_INET6, ip_address, &(address.sin6_addr)) < 1){
     fprintf(stderr, "TCP_CREATE_ADDRESS_IPV6: Incorrect IP address\n");
     return -1;
   }
   return address;
 }
 
-int tcp_send_ipv4(int socket, struct sockaddr_in address, char* message){}
+int tcp_send(char* address, char* message){
+  struct sockaddr_in  address_ipv4;
+  struct sockaddr_in6 address_ipv6;
+  if (inet_pton(AF_INET, address, &address_ipv4) < 1){
+    int socket = tcp_open_socket_ipv4();
+    if (tcp_send_ipv4(socket, address_ipv4, message) < 0){
+      fprintf(stderr, "TCP_SEND: Unable to complete\n");
+      return -1;
+    } else {
+      return socket;
+    }  
+  } else if (inet_pton(AF_INET6, address, &address_ipv6) < 1){
+    int socket = tcp_open_socket_ipv6();
+    if (tcp_send_ipv6(socket, address_ipv6, message) < 0){
+      fprintf(stderr, "TCP_SEND: Unable to complete");
+      return -2;
+    } else {
+      return socket;
+    }
+  } else if (inet_pton(AF_INET, address, &address_ipv4) < 0){
+    fprintf(stderr, "TCP_SEND: Address translation error (system error)\n");
+    return -3;
+  } else {
+    fprintf(stderr, "TCP_SEND: Unknown error\n");
+    return -4;
+  }
+}
 
+int tcp_send_ipv4(int socket, struct sockaddr_in address, char* message){}
   if (connect(socket, (struct sockaddr *) &address, sizeof(address)) < 0){
     fprintf(stderr, "TCP_SEND_IPV4: Failed to connect\n");
     return -1;
@@ -65,7 +92,6 @@ int tcp_send_ipv4(int socket, struct sockaddr_in address, char* message){}
 }
 
 int tcp_send_ipv6(int socket, struct sockaddr_in6 address, char* message){}
-
   if (connect(socket, (struct sockaddr *) &address, sizeof(address)) < 0){
     fprintf(stderr, "TCP_SEND_IPV6: Failed to connect\n");
     return -1;
@@ -78,7 +104,6 @@ int tcp_send_ipv6(int socket, struct sockaddr_in6 address, char* message){}
 }
 
 struct sockaddr_storage tcp_receive_ipv4(int socket, struct sockaddr_in address, char* buffer, uint64_t buffer_size){
-
     if (bind(socket, (struct sockaddr *) &address, sizeof(address)) < 0){
       fprintf(stderr, "TCP_RECEIVE_IPV4: Failed to bind\n");
       return -1;
@@ -104,7 +129,6 @@ struct sockaddr_storage tcp_receive_ipv4(int socket, struct sockaddr_in address,
 }
 
 int tcp_receive_ipv6(int socket, struct sockaddr_in6 address, char* buffer, uint64_t buffer_size){
-
     if (bind(socket, (struct sockaddr *) &address, sizeof(address)) < 0){
       fprintf(stderr, "TCP_RECEIVE_IPV6: Failed to bind\n");
       return -1;
