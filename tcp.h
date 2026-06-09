@@ -153,4 +153,33 @@ int tcp_receive_ipv6(int socket, struct sockaddr_in6 address, char* buffer, uint
     return client_address;
 }
 
+int tcp_receive(char* address, char* buffer, uint64_t buffer_size){
+  struct sockaddr_in  address_ipv4;
+  struct sockaddr_in6 address_ipv6;
+  struct sockaddr_storage client_address;
+  if (inet_pton(AF_INET, address, &address_ipv4) < 1){
+    int socket = tcp_open_socket_ipv4();
+    if ((client_address = tcp_receive_ipv4(socket, address_ipv4, buffer, buffer_size)) < 0){
+      fprintf(stderr, "TCP_RECEIVE: Unable to complete\n");
+      return -1;
+    } else {
+      return client_address;
+    }  
+  } else if (inet_pton(AF_INET6, address, &address_ipv6) < 1){
+    int socket = tcp_open_socket_ipv6();
+    if ((client_address = tcp_receie_ipv6(socket, address_ipv6, message)) < 0){
+      fprintf(stderr, "TCP_RECEIVE: Unable to complete");
+      return -2;
+    } else {
+      return client_address;
+    }
+  } else if (inet_pton(AF_INET, address, &address_ipv4) < 0){
+    fprintf(stderr, "TCP_RECEIVE: Address translation error (system error)\n");
+    return -3;
+  } else {
+    fprintf(stderr, "TCP_RECEIVE: Unknown error\n");
+    return -4;
+  }
+}
+
 #endif
